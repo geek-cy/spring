@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--导入spring的坐标sping-context,对应版本为5.2.10.RELEASE-->
+    <!--构造方法实例化bean-->
+    <bean id="bookDao" class="com.itherima.dao.impl.BookDaoImpl">
+        <!--setter注入-->
+        <property name="connectionNum" value="1"/>
+        <property name="databaseName" value="mysql"/>
+        <property name="array">
+            <array>
+                <value>100</value>
+                <value>100</value>
+            </array>
+        </property>
+        <property name="list">
+            <list>
+                <value>100</value>
+                <value>100</value>
+            </list>
+        </property>
+        <property name="set">
+            <set>
+                <value>itcast</value>
+                <value>itcast</value>
+            </set>
+        </property>
+        <property name="map">
+            <map>
+                <entry key="country" value="china"/>
+                <entry key="city" value="hangzhou"/>
+            </map>
+        </property>
+        <property name="properties">
+            <props>
+                <prop key="country">china</prop>
+                <prop key="city">hangzhou</prop>
+            </props>
+        </property>
+        <!--构造器注入 name写法耦合度高-->
+<!--        <constructor-arg name="connectionNum" value="2"/>-->
+<!--        <constructor-arg name="databaseName" value="gaussdb"/>-->
+        <!--构造器注入 解耦合-->
+        <constructor-arg index="0" type="int" value="3"/>
+        <constructor-arg index="1" type="java.lang.String" value="taurus"/>
+    </bean>
+    <!--name别名-->
+    <bean id="bookService" name="service service2" class="com.itherima.service.impl.BookServiceImpl">
+        <!--配置关系-->
+        <property name="bookDao" ref="bookDao"/>
+    </bean>
+    <!--静态工厂实例化bean-->
+    <bean id="bookDao2" class="com.itherima.factory.BookDaoFactory" factory-method="getBookDao"/>
+    <!--实例工厂实例化bean-->
+    <bean id="bookDaoFactory" class="com.itherima.factory.BookDaoFactory"/>
+    <bean id="bookDao3" factory-method="getBookDao2" factory-bean="bookDaoFactory"/>
+    <!--使用FactoryBean实例化bean-->
+    <bean id="bookDao4" class="com.itherima.factory.BookDaoFactoryBean"/>
+    <!--自动装配-->
+    <bean id="noteService" class="com.itherima.service.impl.NoteServiceImpl" autowire="byType"/>
+    <bean id="noteDao" class="com.itherima.dao.impl.NoteDaoImpl" >
+        <property name="noteNum" value="1"/>
+    </bean>
+
+    <!--系统环境变量never-->
+    <!--从类路径或jar包中搜索并加载properties文件-->
+    <context:property-placeholder location="classpath*:*.properties" system-properties-mode="NEVER"/>
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${name}"/>
+        <property name="password" value="${password}"/>
+    </bean>
+</beans>
